@@ -7,8 +7,8 @@ canvas.width = innerWidth
 canvas.height = innerHeight
 
 const mouse = {
-  x: innerWidth / 2,
-  y: innerHeight / 2
+  x: 10,
+  y: 10
 }
 
 const colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66', 'red', 'green', 'yellow'];
@@ -52,59 +52,49 @@ function randomIntFromRange(min, max) {
 function randomColor(colors) {
   return colors[Math.floor(Math.random() * colors.length)]
 }
-// Objects
-class Ball {
-  constructor(x, y, dy, dx, radius, color) {
-    this.x = x
-    this.y = y
-    this.dy = dy;
-    this.dx = dx;
-    this.radius = radius
-    this.color = color
-  }
 
-  draw() {
+function getDistance(x1, y1, x2, y2) {
+  let xDistance = x2-x1;
+  let yDistance = y2-y1;
+
+  return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+
+}
+// Objects
+function Circle (x, y, radius, color) {
+ 
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+
+    this.update = () => {
+   
+      this.draw()
+    }
+
+  this.draw = () => {
     c.beginPath()
     c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false)
     c.fillStyle = this.color
     c.fill();
-    c.stroke()
-    c.closePath()
+    c.closePath();
   }
 
-  update() {
-    if (this.y + this.radius + this.dy > canvas.height) {
-      this.dy = -this.dy * friction;
-    } else {
-      this.dy += gravity
-    }
-
-    if (this.x + this.radius + this.dx > canvas.width || this.x - this.radius <= 0) {
-      this.dx = -this.dx;
-    } 
-
-    this.x += this.dx;
-    this.y += this.dy;
-    this.draw()
-  }
+  
 }
 
 // Implementation
-let ball;
+let circle1; 
+let circle2; 
+
 const ballArr = [];
 
 function init() {
-  
-  for (let i = 0; i < 300; i++) {
-   
-    let radius = randomIntFromRange(20, 40)
-    let x = randomIntFromRange(radius, canvas.width - radius);
-    let y = randomIntFromRange(0, canvas.height - radius);
-    let dx = randomIntFromRange(-2, 2);
-    let dy = randomIntFromRange(-2, 2);
-    let color = randomColor(colors)
-    ballArr.push(new Ball(x, y, dx, dy, radius, color))
-  }
+
+  circle1 = new Circle(300, 300, 100, 'black');
+  circle2 = new Circle(undefined, undefined, 30, 'red');
+
 }
 
 // Animation Loop
@@ -112,12 +102,20 @@ function animate() {
   requestAnimationFrame(animate)
   c.clearRect(0, 0, canvas.width, canvas.height);
   
-  // ball.update();
+  circle1.update();
+  circle2.x = mouse.x;
+  circle2.y = mouse.y;
+  circle2.update();
 
-  // c.fillText('HTML CANVAS BOILERPLATE', mouse.x, mouse.y)
-  for(let i = 0; i < ballArr.length; i++){
-    ballArr[i].update()
+  if(getDistance(circle1.x, circle1.y, circle2.x, circle2.y) < circle1.radius + circle2.radius) {
+    circle1.color = 'green';
+
+  } else {
+    circle1.color = 'black'
   }
+
+  getDistance(circle1.x, circle1.y, circle2.x, circle2.y);
+
 }
 
 init()

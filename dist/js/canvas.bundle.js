@@ -97,20 +97,14 @@
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/utils.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_utils__WEBPACK_IMPORTED_MODULE_0__);
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
 
 var canvas = document.querySelector('canvas');
 var c = canvas.getContext('2d');
 canvas.width = innerWidth;
 canvas.height = innerHeight;
 var mouse = {
-  x: innerWidth / 2,
-  y: innerHeight / 2
+  x: 10,
+  y: 10
 };
 var colors = ['#2185C5', '#7ECEFD', '#FFF6E5', '#FF7F66', 'red', 'green', 'yellow'];
 var gravity = 1;
@@ -144,78 +138,62 @@ function randomIntFromRange(min, max) {
 
 function randomColor(colors) {
   return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function getDistance(x1, y1, x2, y2) {
+  var xDistance = x2 - x1;
+  var yDistance = y2 - y1;
+  return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
 } // Objects
 
 
-var Ball = /*#__PURE__*/function () {
-  function Ball(x, y, dy, dx, radius, color) {
-    _classCallCheck(this, Ball);
+function Circle(x, y, radius, color) {
+  var _this = this;
 
-    this.x = x;
-    this.y = y;
-    this.dy = dy;
-    this.dx = dx;
-    this.radius = radius;
-    this.color = color;
-  }
+  this.x = x;
+  this.y = y;
+  this.radius = radius;
+  this.color = color;
 
-  _createClass(Ball, [{
-    key: "draw",
-    value: function draw() {
-      c.beginPath();
-      c.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-      c.fillStyle = this.color;
-      c.fill();
-      c.stroke();
-      c.closePath();
-    }
-  }, {
-    key: "update",
-    value: function update() {
-      if (this.y + this.radius + this.dy > canvas.height) {
-        this.dy = -this.dy * friction;
-      } else {
-        this.dy += gravity;
-      }
+  this.update = function () {
+    _this.draw();
+  };
 
-      if (this.x + this.radius + this.dx > canvas.width || this.x - this.radius <= 0) {
-        this.dx = -this.dx;
-      }
-
-      this.x += this.dx;
-      this.y += this.dy;
-      this.draw();
-    }
-  }]);
-
-  return Ball;
-}(); // Implementation
+  this.draw = function () {
+    c.beginPath();
+    c.arc(_this.x, _this.y, _this.radius, 0, Math.PI * 2, false);
+    c.fillStyle = _this.color;
+    c.fill();
+    c.closePath();
+  };
+} // Implementation
 
 
-var ball;
+var circle1;
+var circle2;
 var ballArr = [];
 
 function init() {
-  for (var i = 0; i < 300; i++) {
-    var radius = randomIntFromRange(20, 40);
-    var x = randomIntFromRange(radius, canvas.width - radius);
-    var y = randomIntFromRange(0, canvas.height - radius);
-    var dx = randomIntFromRange(-2, 2);
-    var dy = randomIntFromRange(-2, 2);
-    var color = randomColor(colors);
-    ballArr.push(new Ball(x, y, dx, dy, radius, color));
-  }
+  circle1 = new Circle(300, 300, 100, 'black');
+  circle2 = new Circle(undefined, undefined, 30, 'red');
 } // Animation Loop
 
 
 function animate() {
   requestAnimationFrame(animate);
-  c.clearRect(0, 0, canvas.width, canvas.height); // ball.update();
-  // c.fillText('HTML CANVAS BOILERPLATE', mouse.x, mouse.y)
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  circle1.update();
+  circle2.x = mouse.x;
+  circle2.y = mouse.y;
+  circle2.update();
 
-  for (var i = 0; i < ballArr.length; i++) {
-    ballArr[i].update();
+  if (getDistance(circle1.x, circle1.y, circle2.x, circle2.y) < circle1.radius + circle2.radius) {
+    circle1.color = 'green';
+  } else {
+    circle1.color = 'black';
   }
+
+  getDistance(circle1.x, circle1.y, circle2.x, circle2.y);
 }
 
 init();
